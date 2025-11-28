@@ -202,6 +202,18 @@ function rocm {
             & cmake --install build\rocm --component "HIP" --strip
             if ($LASTEXITCODE -ne 0) { exit($LASTEXITCODE)}
             Remove-Item -Path $script:DIST_DIR\lib\ollama\rocm\rocblas\library\*gfx906* -ErrorAction SilentlyContinue
+            
+            # Replace with custom gfx1103 rocblas
+            $customRocblas = "${script:SRC_DIR}\rocblas-gfx1103"
+            if (Test-Path $customRocblas) {
+                write-host "Installing custom gfx1103 rocblas library"
+                Copy-Item -Path "$customRocblas\rocblas.dll" -Destination "$script:DIST_DIR\lib\ollama\rocm\" -Force
+                Remove-Item -Path "$script:DIST_DIR\lib\ollama\rocm\rocblas\library\*" -Force -ErrorAction SilentlyContinue
+                Copy-Item -Path "$customRocblas\library\*" -Destination "$script:DIST_DIR\lib\ollama\rocm\rocblas\library\" -Force
+                write-host "Custom gfx1103 rocblas installed successfully"
+            } else {
+                write-host "WARNING: Custom gfx1103 rocblas not found at $customRocblas"
+            }
         } else {
             write-host "ROCm not detected, skipping"
         }
