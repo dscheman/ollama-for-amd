@@ -3535,7 +3535,10 @@ static void ggml_backend_cuda_device_get_memory(ggml_backend_dev_t dev, size_t *
     ggml_cuda_set_device(ctx->device);
 
 #if defined(GGML_USE_HIP)
-    if (ggml_hip_mgmt_init() == 0) {
+    // ADLX reports only BIOS-allocated VRAM for iGPUs, not the full shared memory.
+    // For integrated GPUs, skip ADLX and use hipMemGetInfo which correctly reports
+    // all available shared system memory.
+    if (!ctx->integrated && ggml_hip_mgmt_init() == 0) {
         int status = ggml_hip_get_device_memory(ctx->pci_bus_id.c_str(), free, total);
         if (status == 0) {
             GGML_LOG_DEBUG("%s device %s utilizing ADLX memory reporting free: %zu total: %zu\n", __func__, ctx->pci_bus_id.c_str(), *free, *total);
