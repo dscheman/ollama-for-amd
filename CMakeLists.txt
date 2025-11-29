@@ -101,7 +101,7 @@ if(CMAKE_HIP_COMPILER)
 
     if(NOT AMDGPU_TARGETS)
         find_package(hip REQUIRED)
-        list(FILTER AMDGPU_TARGETS INCLUDE REGEX "^gfx(803|90[012]|906(:xnack-)|90c(:xnack-)|1010(:xnack-)|1011(:xnack-)|1012(:xnack-)|103[0-6]|110[0-3]|115[0123]|120[01])$")
+        list(FILTER AMDGPU_TARGETS INCLUDE REGEX "^gfx1103$")
     endif()
 
     if(WIN32 AND WINDOWS_AMDGPU_TARGETS_EXCLUDE_REGEX)
